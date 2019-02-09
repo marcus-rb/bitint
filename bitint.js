@@ -297,6 +297,21 @@ const multiply = (num1, num2, signed = false) => {
   let operands;
   if (signed) {
     operands = signedOps(num1, num2);
+
+    let operand1 = operands[0].slice();
+    let operand2 = operands[1].slice();
+
+    const signedness = operand1[0] === operand2[0] ? operand1[0] ? true : false :
+      operand1[0] ? "first" : "last";
+
+    if (signedness === true) {
+      return multiply(toPositve(operand1), toPositve(operand1));
+    } else if (signedness === false) {
+      return multiply(operand1, operand2);
+    } else if (signedness === "first") {
+      return toNegative(multiply(toPositive(operand1),operand2));
+    } else return toNegative(multiply(operand1, toPositive(operand2)));
+
   } else {
     operands = unsignedOps(num1, num2);
 
@@ -312,66 +327,6 @@ const multiply = (num1, num2, signed = false) => {
     }
 
     return result;
-  }
-}
-
-const multiply2 = (num1, num2, signed = false) => {
-  verifyBitArrays(num1, num2);
-  const operands = signed ? signedOps(num1, num2) : unsignedOps(num1, num2) ;
-  let operand1 = operands[0].slice();
-  let operand2 = operands[1].slice();
-
-  let result = zero(operand1);
-  let count = 0;
-
-  while (operand2.includes(true)) {
-    if (operand2[operand2.length-1] === true) {
-      result = shiftl(operand1, count);
-    }
-    count++;
-    operand2 = shiftr(operand2, 1);
-  }
-  return result;
-}
-
-const multiply3 = (num1, num2, signed = false) => {
-  verifyBitArrays(num1, num2);
-  if (signed) {
-    const operands = signedOps(num1,num2);
-    let operand1 = operands[0].slice();
-    let operand2 = operands[1].slice();
-
-    const resultSign = operands[0][0] !== operands[1][0] ? true : false ;
-/*
-    return (
-      resultSign ? operands[0][0] ? multiply3(toPositive(operands[0]),operands[1]) : multiply3(operands[0],toPositive(operands[1])) :
-        operands[0][0] ? multiply3(toPositive(operands[0]),toPositive(operands[1])) : multiply3(operands[0], operands[1])
-    ); */
-    console.log(operands[0]);
-    console.log(operands[1]);
-
-    return (
-      resultSign ? operands[0][0] ? toNegative(multiply3(toPositve(operands[0]), operands[1])) : toNegative(multiply3(operands[0], toPositve(operands[1]))) :
-        operands[0][0] ? multiply3(toPositve(operands[0]), toPositive(operands[1])) : multiply3(operands[0], operands[1])
-    );
-
-  } else {
-    const operands = unsignedOps(num1,num2);
-    let operand1 = operands[0].slice();
-    let operand2 = operands[1].slice();
-
-    let result = zero(operand1);
-    let count = 0;
-
-    while(operand2.includes(true)) {
-      if (operand2[operand2.length-1] === true) result = shiftl(operand1, count);
-
-      count++;
-      operand2 = shiftr(operand2, 1);
-
-      return result;
-    }
-
   }
 }
 
