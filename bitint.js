@@ -319,9 +319,10 @@ const multiply = (num1, num2, signed = false) => {
     let operand2 = operands[1].slice();
 
     let result = zero(operand1);
+    const juan = one(operand1);
 
     while (operand2.includes(true)) {
-      if (and(operand2, one(operand2)).includes(true)) result = add(result, operand1);
+      if (and(operand2, juan).includes(true)) result = add(result, operand1);
       operand1 = shiftl(operand1, 1);
       operand2 = shiftr(operand2, 1);
     }
@@ -345,12 +346,43 @@ const minus = (num1, num2, signed = false) => {
   return operand1;
 }
 
-const divide = (num1, num2, signed = false) => {
+const divide = (num1, num2, signed = false) => { //SOMETHINGS IS WRONG WITH THIS FUCKER
+  // Figure out the sign
+  // Convert both numbers to positive
+  // Do the math
+  // Convert to negative if sign
+  if (signed) {
+    const operands = signedOps(num1, num2);
+    let operand1 = operands[0].slice();
+    let operand2 = operands[1].slice();
 
+    const sign = operand1[0] === operand2[0] ? false : true ;
+
+    operand1 = operand1[0] ? toPositive(operand1) : operand1 ;
+    operand2 = operand2[0] ? toPositive(operand2) : operand2 ;
+
+    return sign ? toNegative(divide(operand1, operand2)) : divide(operand1, operand2) ;
+  } else {
+    const operands = unsignedOps(num1, num2);
+    let operand1 = operands[0].slice();
+    let operand2 = operands[1].slice();
+
+    let quotient = zero(operand1);
+    let juan = one(quotient);
+
+    while(greaterOrEqual(operand1, operand2)) {
+      operand1 = minus(operand1, operand2);
+      quotient = add(quotient, juan);
+    }
+
+    return quotient;
+  }
 }
 
-const modulo = (num1, num2, signed = false) => {
+const modulo = (num, modfactor, signed = false) => { //THIS IS ALMOST USELESS: SOMETIMES WORKS; SOMETIMES DONT
+  const modActual = typeof(modfactor) === "number" ? numToBitint(`${modfactor}`, num.length, signed ? true : false) : modfactor ;
 
+  return minus(num, minus(num, divide(num, modActual, signed), signed), signed)
 }
 
 const moduloAdd = (num1, num2, signed = false) => {
@@ -388,6 +420,131 @@ const numToBitint = (num, size = 32, signed = false) => {
 
     if (value.indexOf(true) < value.length - size ) throw "OverflowError: Input exceeds range of data type";
     return snapToSize(value, size);
+  }
+}
+
+// - - - - -
+
+// ---- vv CLASS SYSTEM vv ----
+
+/* < Superclass > */
+class bitint {
+  constructor(num, size, isSigned) {
+    this.input = num;
+    this.size = size;
+    this.signed = isSigned;
+
+    //vv Processing value vv
+    this.proval = numToBitint(num, this.size, this.signed);
+
+    this.max = (function(){
+      if (isSigned) {
+        switch(size) {
+          case 8:
+            return "127";
+          case 16:
+            return "32 767";
+          case 32:
+            return "2 147 483 647";
+          case 64:
+            return "9 223 372 036 854 775 807";
+          default:
+            throw "Construction Error: Size of integer cannot exceed 64";
+        }
+      } else {
+        switch(size) {
+          case 8: return "255";
+          case 16: return "65 535";
+          case 32: return "4 294 967 295";
+          case 64: return "18 446 744 073 709 551 615";
+          default: throw "Construction error: Size of integer cannot exceed 64";
+        }
+      }
+    })();
+    this.min = (function(){
+      if (isSigned) {
+        switch(size) {
+          case 8: return "-128";
+          case 16: return "-32 768";
+          case 32: return "-2 147 483 648";
+          case 64: return "-9 223 372 036 854 775 808";
+          default: throw "Construction Error: Size of integer cannot exceed 64";
+        }
+      } else {
+        return "0";
+      }
+    })();
+  }
+  toNumber() {
+    return this.signed ? tosignum(this.proval) : tonum(this.proval) ;
+  }
+
+  add(num) {
+
+  }
+}
+
+/* < 64-bit signed integer > */
+class long extends bitint {
+  constructor(num) {
+    super(num, 64, true);
+    this.subtype = "long";
+  }
+}
+
+/* < 64-bit unsigned integer > */
+class u_long extends bitint {
+  constructor(num) {
+    super(num, 64, false);
+    this.subtype = "u_long";
+  }
+}
+
+/* < 32-bit signed integer > */
+class int extends bitint {
+  constructor(num) {
+    super(num, 32, true);
+    this.subtype = "int";
+  }
+}
+
+/* < 32-bit unsigned integer > */
+class u_int extends bitint {
+  constructor(num) {
+    super(num, 32, false);
+    this.subtype = "u_int";
+  }
+}
+
+/* < 16-bit signed integer > */
+class short extends bitint {
+  constructor(num) {
+    super(num, 16, true);
+    this.subtype = "short";
+  }
+}
+
+/* < 16-bit unsigned integer > */
+class u_short extends bitint {
+  constructor(num) {
+    super(num, 16, false);
+    this.subtype = "u_short";
+  }
+}
+
+/* < 8-bit signed integer > */
+class byte extends bitint {
+  constructor(num) {
+    super(num, 8, true);
+    this.subtype = "byte";
+  }
+}
+
+/* < 8-bit unsigned integer > */
+class u_byte extends bitint {
+  constructor(num) {
+    super(num, 8, false);
+    this.subtype = "u_byte";
   }
 }
 
