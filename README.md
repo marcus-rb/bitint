@@ -23,3 +23,7 @@ To convert a bitint back to a number, us tonum(*bitint*) for unsigned integers, 
 
 tosignum(minus57348);
 > -57348
+
+### Some JavaScript:
+```JavaScript
+const plus5738 = new u_short("5739");
