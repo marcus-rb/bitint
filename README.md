@@ -68,28 +68,28 @@ u_byte | 8 | no | 0 to 255
 **Method** | **Does what:**
 ---------- | --------------
 **Bitwise operation** |
-    and(num1, num2); | Bitwise and ( & )
-    or(num1, num2); | Bitwise or ( \| )
-    xor(num1, num2); | Bitwise exclusive or ( ^ )
-    not(num) | Bitwise not ( ~ )
-    nand(num1, num2) | Bitwise not and (! ( x & y) )
-    nor(num1, num2) | Bitwise not or (! (x \| y) )
-    xnor(num1, num2) | Bitwise not excluse or (! (x ^ y))
-    -- | --
-    shift(num, amount, arithmetic = false) | Returns *num* shifted *amount* (to left when amount < 0) bits. Arithmetic specifies carry or non-carry shifts
-    shiftr(num, amount, arithmetic = false) | Returns *num* shifted *amount* times to the right. Specify arithmetic as true if you want a carry shift.  
-    shiftl(num, amount, arithmetic = false) | Returns *num* shifted *amount* times to the left. Arithmetic is ignored.
-    rot(num, amount) | Returns *num* rotated *amount* times (to left when amount < 0) bits.
-    rotr(num, amount) | Returns *num* rotated *amount* times to the right.
-    rotl(num, amount) | Returns *num* rotated *amount* times to the left.
+and(num1, num2); | Bitwise and ( & )
+or(num1, num2); | Bitwise or ( \| )
+xor(num1, num2); | Bitwise exclusive or ( ^ )
+not(num) | Bitwise not ( ~ )
+nand(num1, num2) | Bitwise not and (! ( x & y) )
+nor(num1, num2) | Bitwise not or (! (x \| y) )
+xnor(num1, num2) | Bitwise not excluse or (! (x ^ y))
+-- | --
+shift(num, amount, arithmetic = false) | Returns *num* shifted *amount* (to left when amount < 0) bits. Arithmetic specifies carry or non-carry shifts
+shiftr(num, amount, arithmetic = false) | Returns *num* shifted *amount* times to the right. Specify arithmetic as true if you want a carry shift.  
+shiftl(num, amount, arithmetic = false) | Returns *num* shifted *amount* times to the left. Arithmetic is ignored.
+rot(num, amount) | Returns *num* rotated *amount* times (to left when amount < 0) bits.
+rotr(num, amount) | Returns *num* rotated *amount* times to the right.
+rotl(num, amount) | Returns *num* rotated *amount* times to the left.
 **Arithmetic** |
-  add(num1, num2, signed = false) | Returns sum of *num1* and *num2*. *signed* should be set to true if numbers are signed. Defaults to false.
-  minus(num1, num2, signed = false) | Returns differnce of *num1* and *num2*. *signed* should be set to true if numbers are signed. Defaults to false.
-  multiply(num1, num2, signed = false) | Returns product of *num1* and *num2*. *signed* should be set to true if numbers are signed. Defaults to false.
-  divide(num1, num2, signed = false) | not implemented
-  modulo(num1, moduloFactors, signed = false) | not implemented
-  moduloAdd( ? ) | not implemented
+add(num1, num2, signed = false) | Returns sum of *num1* and *num2*. *signed* should be set to true if numbers are signed. Defaults to false.
+minus(num1, num2, signed = false) | Returns differnce of *num1* and *num2*. *signed* should be set to true if numbers are signed. Defaults to false.
+multiply(num1, num2, signed = false) | Returns product of *num1* and *num2*. *signed* should be set to true if numbers are signed. Defaults to false.
+divide(num1, num2, signed = false) | not implemented
+modulo(num1, moduloFactors, signed = false) | not implemented
+moduloAdd( ? ) | not implemented
 **Conversion** |
-  numToBitint(num, size = 32, signed = false) | Returns a number passed in a string as a bitint. Signed must be specified as true if number is negative.
-  tonum(bitint) | Returns a bitint converted to a number. Only works accurately for numbers up to Number.MAX_SAFE_INTEGER. (approx 2**53)
-  tosignum(bitint) | Returns a bitint converted to a number, but treats bitint as a signed numbers. Limit is the same as with tonum.
+numToBitint(num, size = 32, signed = false) | Returns a number passed in a string as a bitint. Signed must be specified as true if number is negative.
+tonum(bitint) | Returns a bitint converted to a number. Only works accurately for numbers up to Number.MAX_SAFE_INTEGER. (approx 2**53)
+tosignum(bitint) | Returns a bitint converted to a number, but treats bitint as a signed numbers. Limit is the same as with tonum.
