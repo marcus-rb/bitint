@@ -379,10 +379,27 @@ const divide = (num1, num2, signed = false) => { //SOMETHINGS IS WRONG WITH THIS
   }
 }
 
+const divide2 = (num1, num2, signed = false) => {
+  if (JSON.stringify(num2) === JSON.stringify(zero(num2))) throw "Error: Division by 0";
+  if (JSON.stringify(num1) === JSON.stringify(zero(num1))) return zero(num1);
+  if (signed) {
+    const operands = signedOps(num1, num2);
+
+    const sign = !(operands[0][0] === operands[1][0]);
+    const signOfFirst = operands[0][0];
+    //console.log("sign: \n"+ sign);
+
+    return sign ? signOfFirst ? divide2(toPositive(operands[0]), operands[1]) : divide2(operands[0], toPositve(operands[1])) :
+      signOfFirst ? divide2(toPositive(operands[0]), toPositive(operands[1])) : divide2(operands[0], operands[1]) ;
+  } else {
+
+  }
+}
+
 const modulo = (num, modfactor, signed = false) => { //THIS IS ALMOST USELESS: SOMETIMES WORKS; SOMETIMES DONT
   const modActual = typeof(modfactor) === "number" ? numToBitint(`${modfactor}`, num.length, signed ? true : false) : modfactor ;
 
-  return minus(num, minus(num, divide(num, modActual, signed), signed), signed)
+  return and(num, modActual);
 }
 
 const moduloAdd = (num1, num2, signed = false) => {
@@ -477,10 +494,6 @@ class bitint {
   }
   toNumber() {
     return this.signed ? tosignum(this.proval) : tonum(this.proval) ;
-  }
-
-  add(num) {
-
   }
 }
 
