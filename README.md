@@ -27,3 +27,16 @@ tosignum(minus57348);
 ### Some JavaScript:
 ```JavaScript
 const plus5738 = new u_short("5739");
+```
+### List of data types
+
+Class Name | Size | Signed | Range
+-----------|------|--------|------
+long | 64 | x | -9,223,372,036,854,775,808 to 9,223,372,036,854,775,807
+u_long | 64 | - | 0 to 18,446,744,073,709,551,615
+int | 32 | x | −2,147,483,648 to 2,147,483,647 to 2,147,483,648 to 2,147,483,646
+u_int | 32 | - | 0 to 4,294,967,295
+short | 16 | x | -32,768 to 32,767
+u_short | 16 | - | 0 to 65,535
+byte | 8 | x | -128 to 127
+u_byte | 8 | - | 0 to 255
