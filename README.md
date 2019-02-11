@@ -6,7 +6,7 @@ A JavaScript framework for working with integers of sizes 8, 16, 32- and 64 bits
 > this is still under development
 > updates are rolled out as soon as the implemented improvement is properly functional
 
-##Current state
+## Current state
 Use this list to follow the development progress
 - [x] Computing constants and methods
 - [x] Basic QA e.g. verifcation in methods and proper size casting
