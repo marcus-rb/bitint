@@ -3,7 +3,7 @@
  * Created: December 28th 2018
  * Last updated: February 8th 2019
  *
- *
+ * HUSK: OVERFLOW VED FLIPPING AV INTMIN VED SIGNERTE TALL
  *
  * REMEMBER: ADD VERIFICATION IN THE MATH OPERATIONS
  * CONTENTS
@@ -230,17 +230,19 @@ const equals = (num1, num2) => {
 const greater = (num1, num2, signed = false) => {
   if (signed) { //Dependency : equalizeTwo(signed) -> minus(signed)
     const operands = signedOps(num1, num2);
-    const signedness = operands[0][0] === operands[1][0] ? operands[0][0] ? 0 : 1 :
+    const signedness = operands[0][0] === operands[1][0] ? operands[0][0] ? 1 : 0 :
                           operands[0][0] && !operands[1][0] ? false : true ;
 
     if (typeof(signedness)!== "number") return signedness;
-    if (signedness === 0) return greater(num1.slice(1), num2.slice(1));
-    if (signedness === 1) return greater(num2.slice(1), num1.slice(1));
+    if (signedness === 0) return greater(operands[0], operands[1]);
+    if (signedness === 1) return greater(toPositive(operands[0]), toPositive(operands[1]));
 
   } else {
     const operands = unsignedOps(num1, num2);
     for (let i = 0; i < operands[0].length; i++) {
-      if (operands[0][i] && !operands[1][i]) return true;
+      if (operands[0][i] !== operands[1][i]) {
+        return operands[0][i] ? true : false ;
+      }
     }
     return false;
   }
@@ -380,6 +382,7 @@ const divide = (num1, num2, signed = false) => { //SOMETHINGS IS WRONG WITH THIS
 }
 
 const divide2 = (num1, num2, signed = false) => {
+  console.time();
   if (JSON.stringify(num2) === JSON.stringify(zero(num2))) throw "Error: Division by 0";
   if (JSON.stringify(num1) === JSON.stringify(zero(num1))) return zero(num1);
   if (signed) {
@@ -392,7 +395,54 @@ const divide2 = (num1, num2, signed = false) => {
     return sign ? signOfFirst ? divide2(toPositive(operands[0]), operands[1]) : divide2(operands[0], toPositve(operands[1])) :
       signOfFirst ? divide2(toPositive(operands[0]), toPositive(operands[1])) : divide2(operands[0], operands[1]) ;
   } else {
+    const operands = unsignedOps(num1, num2);
+    let dividend = operands[0].slice();
+    let divisor = operands[1].slice();
 
+    let result = zero(dividend);
+    const _one = one(dividend);
+
+    while (greaterOrEqual(dividend, divisor, true)) {
+      //console.log("Nåværende rest:"+tonum(dividend));
+      dividend = minus(dividend, divisor, true);
+      result = add(result, _one);
+    }
+    console.timeEnd();
+    return result;
+  }
+}
+
+const div = (num1, num2, signed = false) => {
+  if (signed) {
+
+  } else {
+    console.time();
+    const operands = unsignedOps(num1, num2);
+    let dividend = operands[0].slice();
+    let divisor = operands[1].slice();
+
+
+    let rest = dividend.slice();
+    let result = zero(dividend);
+    let currentFactor = 0;
+    let divisionCount = 0;
+
+    while(greaterOrEqual(rest, divisor)) {
+      currentFactor = 0;
+      let divisorCopy = divisor.slice();
+      do {
+        divisorCopy = shiftl(divisorCopy, 1);
+        currentFactor++;
+      } while (greater(rest, divisorCopy))
+      let divisorCopyCopy = divisor.slice();
+      // Rest - divosor << (currentFactor-1)
+      rest = minus(rest, shiftl(divisorCopyCopy, currentFactor-1));
+      divisionCount+= 2**(currentFactor-1);
+    }
+
+
+    console.timeEnd();
+    return numToBitint(`${divisionCount}`, num1.length)
   }
 }
 
@@ -430,6 +480,7 @@ const numToBitint = (num, size = 32, signed = false) => {
     return isNegative ? toNegative(numToBitint(positive, size)) : numToBitint(positive, size) ;
 
   } else {
+    if (num === "0") return to64([false, false]);
     num = num.split("").reverse();
     const value = num.map((val, index) => [parseInt(val), index])
                     .map(subarr => multiply(to64(global_zeroThroughNine[subarr[0]]), to64(global_tenPowers[subarr[1]])))
@@ -562,6 +613,14 @@ class u_byte extends bitint {
 }
 
 // ---- vv EXTERNAL DEV METHODS vv ----
+
+const four = numToBitint("4",8);
+const two = numToBitint("2",8);
+const juan = numToBitint("1", 8);
+const eight = numToBitint("8", 8);
+const three = numToBitint("3", 8);
+const maxnumJS = numToBitint(`${Number.MAX_SAFE_INTEGER}`, 64);
+const maxInt = numToBitint("18446744073709551615", 64);
 
 const fourbit = [true, false, false, true];
 const fourbit2 = [false, false, true, true];
