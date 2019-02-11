@@ -68,7 +68,10 @@ u_byte | 8 | no | 0 to 255
 **Method** | **Does what:**
 ---------- | --------------
 **Bitwise operation** |
-and(num1, num2); | Bitwise and ( & )
+```JavaScript
+and(num1, num2);
+```
+ | Bitwise and ( & )
 or(num1, num2); | Bitwise or ( \| )
 xor(num1, num2); | Bitwise exclusive or ( ^ )
 not(num) | Bitwise not ( ~ )
