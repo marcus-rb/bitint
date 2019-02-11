@@ -63,7 +63,7 @@ u_short | 16 | no | 0 to 65,535
 byte | 8 | yes | -128 to 127
 u_byte | 8 | no | 0 to 255
 
-### List of methods
+### List of methods (non-class, bitint value specific)
 
 **Method** | **Does what:**
 ---------- | --------------
