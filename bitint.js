@@ -679,6 +679,22 @@ const binaryArrayToHexNum = (num) => {
   //0 1 2 3 4 5 6 7 8 9 a b c d e f
 }
 
+const hexnumToBinary = (num) => {
+  let returnStr = "";
+  num = num.slice(2);
+  num = num.split("").reverse();
+  for (let partial of num) {
+    let temp = "0000";
+    let temp2 = parseInt(partial, 16).toString(2);
+    let replace = temp.slice(0, temp.length - temp2.length).concat(temp2);
+    //console.log(replace);
+    returnStr+= replace;
+  }
+  return returnStr;
+}
+
+const hexnumToBitarray = (num) => binaryToBitArray(hexnumToBinary(num));
+
 const tonum = (num) => parseInt(binaryArrayToString(num), 2);
 
 const tosignum = (num) => {
