@@ -4,6 +4,7 @@
  * Last updated: February 8th 2019
  *
  * HUSK: OVERFLOW VED FLIPPING AV INTMIN VED SIGNERTE TALL
+ * HUSK: PUTT VARIABLER INNI FUNKSJON
  *
  * REMEMBER: ADD VERIFICATION IN THE MATH OPERATIONS
  * CONTENTS
@@ -153,14 +154,14 @@ const signedOps = (num1, num2) => num1.length > num2.length ? equalizeTwo(num1, 
 
 // ---- vv BITWISE LOGIC & OPERATION ----
 
-/* -- < bitwise logic > -- */
-const or = (num1, num2) => num1.map((bool, index) => bool || num2[index] ? true : false);
+/* -- < bitwise logic > -- */ //OPTIMIZED
+const or = (num1, num2) => num1.map((bool, index) => bool || num2[index]);
 
-const and = (num1, num2) => num1.map((bool, index) => bool && num2[index] ? true : false);
+const and = (num1, num2) => num1.map((bool, index) => bool && num2[index]);
 
-const xor = (num1, num2) => num1.map((bool, index) => bool !== num2[index] ? true : false);
+const xor = (num1, num2) => num1.map((bool, index) => bool !== num2[index]);
 
-const not = (num) => num.map(bool => bool ? false : true);
+const not = (num) => num.map(bool => !bool);
 
 const nor = (num1, num2) => not(or(num1,num2));
 
@@ -198,12 +199,27 @@ const shift = (num, amount, arithmetic = false) => {
     }
     return operand;
 
-
   }
 }
 
 const shiftr = (num, amount, arithmetic = false) => shift(num, amount, arithmetic);
 const shiftl = (num, amount, arithmetic) => shift(num, -amount, arithmetic);
+
+// These two modify the array. Faster than the other shifts
+const shiftr_ip = (num, amount, arithmetic = false) => {
+  const mostSignifcantBit = num[0];
+  const bitToShiftIn = arithmetic ? mostSignifcantBit : false;
+  for (let i = 0; i < amount; i++) {
+    num.pop();
+    num.unshift(bitToShiftIn);
+  }
+}
+const shiftl_ip = (num, amount) => {
+  for (let i = 0; i < amount; i++) {
+    num.shift();
+    num.push(false);
+  }
+}
 
 const rot = (num, amount) => {
   const front = num.slice(num.length - amount);
@@ -216,16 +232,33 @@ const rot = (num, amount) => {
 const rotr = (num, amount) => rot(num, amount);
 const rotl = (num, amount) => rot(num, -amount);
 
+const rotr_ip = (num, amount) => {
+  let popped;
+  for (let i = 0; i < amount; i++) {
+    popped = num[num.length - 1];
+    num.pop();
+    num.unshift(popped);
+  }
+}
+const rotl_ip = (num, amount) => {
+  let shifted;
+  for (let i = 0; i < amount; i++) {
+    shifted = num[0];
+    num.shift();
+    num.push(shifted);
+  }
+}
 // - - - - -
 
 // ---- vv COMPARISON OPERATION vv ----
 
 const equals = (num1, num2) => {
-  for (let i = 0; i < num1.length; i++) {
-    if (num1[i] !== num2[i]) return false;
-  }
-  return true;
+  let areEqual = true;
+  for (let i = 0; i < num1.length; i++)
+    num1[i] !== num2[i] ? areEqual = false : null;
+  return areEqual;
 }
+
 
 const greater = (num1, num2, signed = false) => {
   if (signed) { //Dependency : equalizeTwo(signed) -> minus(signed)
@@ -348,75 +381,11 @@ const minus = (num1, num2, signed = false) => {
   return operand1;
 }
 
-const divide = (num1, num2, signed = false) => { //SOMETHINGS IS WRONG WITH THIS FUCKER
-  // Figure out the sign
-  // Convert both numbers to positive
-  // Do the math
-  // Convert to negative if sign
-  if (signed) {
-    const operands = signedOps(num1, num2);
-    let operand1 = operands[0].slice();
-    let operand2 = operands[1].slice();
-
-    const sign = operand1[0] === operand2[0] ? false : true ;
-
-    operand1 = operand1[0] ? toPositive(operand1) : operand1 ;
-    operand2 = operand2[0] ? toPositive(operand2) : operand2 ;
-
-    return sign ? toNegative(divide(operand1, operand2)) : divide(operand1, operand2) ;
-  } else {
-    const operands = unsignedOps(num1, num2);
-    let operand1 = operands[0].slice();
-    let operand2 = operands[1].slice();
-
-    let quotient = zero(operand1);
-    let juan = one(quotient);
-
-    while(greaterOrEqual(operand1, operand2)) {
-      operand1 = minus(operand1, operand2);
-      quotient = add(quotient, juan);
-    }
-
-    return quotient;
-  }
-}
-
-const divide2 = (num1, num2, signed = false) => {
-  console.time();
-  if (JSON.stringify(num2) === JSON.stringify(zero(num2))) throw "Error: Division by 0";
-  if (JSON.stringify(num1) === JSON.stringify(zero(num1))) return zero(num1);
-  if (signed) {
-    const operands = signedOps(num1, num2);
-
-    const sign = !(operands[0][0] === operands[1][0]);
-    const signOfFirst = operands[0][0];
-    //console.log("sign: \n"+ sign);
-
-    return sign ? signOfFirst ? divide2(toPositive(operands[0]), operands[1]) : divide2(operands[0], toPositve(operands[1])) :
-      signOfFirst ? divide2(toPositive(operands[0]), toPositive(operands[1])) : divide2(operands[0], operands[1]) ;
-  } else {
-    const operands = unsignedOps(num1, num2);
-    let dividend = operands[0].slice();
-    let divisor = operands[1].slice();
-
-    let result = zero(dividend);
-    const _one = one(dividend);
-
-    while (greaterOrEqual(dividend, divisor, true)) {
-      //console.log("Nåværende rest:"+tonum(dividend));
-      dividend = minus(dividend, divisor, true);
-      result = add(result, _one);
-    }
-    console.timeEnd();
-    return result;
-  }
-}
-
-const div = (num1, num2, signed = false) => {
+const div2 = (num1, num2, signed = false) => {
+  console.time("Division1")
   if (signed) {
 
   } else {
-    console.time();
     const operands = unsignedOps(num1, num2);
     let dividend = operands[0].slice();
     let divisor = operands[1].slice();
@@ -439,21 +408,75 @@ const div = (num1, num2, signed = false) => {
       rest = minus(rest, shiftl(divisorCopyCopy, currentFactor-1));
       divisionCount+= 2**(currentFactor-1);
     }
-
-
-    console.timeEnd();
-    return numToBitint(`${divisionCount}`, num1.length)
+    console.timeEnd("Division1");
+    return numToBitint(`${divisionCount}`, num1.length);
   }
+}
+
+const divide = (num1, num2, signed = false) => signed ? divSigned(num1, num2) : divUnsigned(num1, num2) ;
+
+const divSigned = (num1, num2) => {
+  const operands = signedOps(num1, num2);
+
+  const sign = !(operands[0][0] === operands[1][0]);
+
+  let dividend = operands[0][0] ? toPositive([true].concat(operands[0])) : [false].concat(operands[0]) ;
+  let divisor = operands[1][0] ? toPositive([true].concat(operands[1])) : [false].concat(operands[1]) ;
+
+  const returnValue = sign ? toNegative(divUnsigned(dividend, divisor).slice(1)) : divUnsigned(dividend, divisor).slice(1) ;
+
+  //Returnvalue is now 1 bit larger. If that bit is true, throw overflow error
+  //if (returnValue[0]) throw "Overflow error: Somehow you managed to get a more negative number than what you already had. \nThis should be impossible";
+
+  return returnValue;
+}
+
+const divUnsigned = (dividend_pre, divisor_pre) => {
+  const operands = unsignedOps(dividend_pre, divisor_pre);
+  let dividend = operands[0].slice();
+  let divisor = operands[1].slice();
+
+  let rest = dividend.slice();
+  let result = zero(dividend);
+  let currentFactor = 0;
+  const two_process = shiftl(one(rest), 1);
+
+  while(greaterOrEqual(rest, divisor)) {
+    currentFactor = 0;
+    let divisorCopy = divisor.slice();
+    do {
+      shiftl_ip(divisorCopy, 1);
+      currentFactor++;
+    } while (greater(rest, divisorCopy));
+
+    rest = minus(rest, shiftl(divisor, currentFactor-1));
+    result = add(result, power(two_process, currentFactor-1));
+  }
+
+  return result;
+}
+
+const power = (num, exponent, signed = false) => {
+  const expontentInitial = `${exponent}`;
+  let result = num.slice();
+  while (exponent > 1) {
+    result = multiply(result, num, signed);
+    exponent--;
+  }
+  return parseInt(expontentInitial) === 0 ? one(num) : result;
 }
 
 const modulo = (num, modfactor, signed = false) => { //THIS IS ALMOST USELESS: SOMETIMES WORKS; SOMETIMES DONT
   const modActual = typeof(modfactor) === "number" ? numToBitint(`${modfactor}`, num.length, signed ? true : false) : modfactor ;
 
-  return and(num, modActual);
+  return minus(num, multiply(divide(num, modActual, signed), modActual, signed), signed);
 }
 
-const moduloAdd = (num1, num2, signed = false) => {
-
+const moduloAdd = (num1, num2, modfactor, signed = false) => {
+  const stage1 = add(num1, num2, signed);
+  const stage2 = modulo(stage1, modfactor, signed);
+  return stage2;
+  //return add(num1, modulo(num1, modfactor));
 }
 
 // - - - - -
@@ -546,7 +569,7 @@ class bitint {
   toNumber() {
     return this.signed ? tosignum(this.proval) : tonum(this.proval) ;
   }
-}
+ }
 
 /* < 64-bit signed integer > */
 class long extends bitint {
@@ -636,6 +659,25 @@ const binaryToBitArray = (num) => {
 }
 
 const binaryArrayToString = (num) => num.map(bool => bool ? "1" : "0").join("");
+
+const binaryArrayToHexNum = (num) => {
+  let str = "";
+  let sum = [];
+  for (let i = 0; i < num.length / 4; i++) sum.push(num.slice(4*i, 4*(i+1)));
+  //console.log(sum);
+  for (let partial of sum) {
+    let tempsum = 0;
+    for (let i = 0; i < partial.length; i++) {
+      partial[i] ? tempsum += 2**(partial.length-i-1) : null;
+    }
+    //let tempsum = partial.reduce((accsum, cur, index) => cur ? accsum+=2**(3-index):null);
+    tempsum = tempsum.toString(16);;
+    str += tempsum;
+  }
+  str = str.split("").filter(char => char === "0" ? false : true).join("");
+  return str;
+  //0 1 2 3 4 5 6 7 8 9 a b c d e f
+}
 
 const tonum = (num) => parseInt(binaryArrayToString(num), 2);
 
