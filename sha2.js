@@ -103,6 +103,109 @@ const roundConstants = [
 ];
 
 const sha256 = (inputString, charSize = 8) => {
+  console.time();
+
+  const hashVals = [
+    [false, true, true, false, true, false, true, false,
+      false, false, false, false, true, false, false, true,
+      true, true, true, false, false, true, true, false,
+      false, true, true, false, false, true, true, true],
+    [true, false, true, true, true, false, true, true,
+      false, true, true, false, false, true, true, true,
+      true, false, true, false, true, true, true, false,
+      true, false, false, false, false, true, false, true],
+    [false, false, true, true, true, true, false, false,
+      false, true, true, false, true, true, true, false,
+      true, true, true, true, false, false, true, true,
+      false, true, true, true, false, false, true, false],
+    [true, false, true, false, false, true, false, true,
+      false, true, false, false, true, true, true, true,
+      true, true, true, true, false, true, false, true,
+      false, false, true, true, true, false, true, false],
+    [false, true, false, true, false, false, false, true,
+      false, false, false, false, true, true, true, false,
+      false, true, false, true, false, false, true, false,
+      false, true, true, true, true, true, true, true],
+    [true, false, false, true, true, false, true, true,
+      false, false, false, false, false, true, false, true,
+      false, true, true, false, true, false, false, false,
+      true, false, false, false, true, true, false, false],
+    [false, false, false, true, true, true, true, true,
+      true, false, false, false, false, false, true, true,
+      true, true, false, true, true, false, false, true,
+      true, false, true, false, true, false, true, true],
+    [false, true, false, true, true, false, true, true,
+      true, true, true, false, false, false, false, false,
+      true, true, false, false, true, true, false, true,
+      false, false, false, true, true, false, false, true],
+  ];
+  const roundConstants = [
+    [false,true,false,false,false,false,true,false,true,false,false,false,true,false,true,false,false,false,true,false,true,true,true,true,true,false,false,true,true,false,false,false],
+    [false,true,true,true,false,false,false,true,false,false,true,true,false,true,true,true,false,true,false,false,false,true,false,false,true,false,false,true,false,false,false,true],
+    [true,false,true,true,false,true,false,true,true,true,false,false,false,false,false,false,true,true,true,true,true,false,true,true,true,true,false,false,true,true,true,true],
+    [true,true,true,false,true,false,false,true,true,false,true,true,false,true,false,true,true,true,false,true,true,false,true,true,true,false,true,false,false,true,false,true],
+    [false,false,true,true,true,false,false,true,false,true,false,true,false,true,true,false,true,true,false,false,false,false,true,false,false,true,false,true,true,false,true,true],
+    [false,true,false,true,true,false,false,true,true,true,true,true,false,false,false,true,false,false,false,true,false,false,false,true,true,true,true,true,false,false,false,true],
+    [true,false,false,true,false,false,true,false,false,false,true,true,true,true,true,true,true,false,false,false,false,false,true,false,true,false,true,false,false,true,false,false],
+    [true,false,true,false,true,false,true,true,false,false,false,true,true,true,false,false,false,true,false,true,true,true,true,false,true,true,false,true,false,true,false,true],
+    [true,true,false,true,true,false,false,false,false,false,false,false,false,true,true,true,true,false,true,false,true,false,true,false,true,false,false,true,true,false,false,false],
+    [false,false,false,true,false,false,true,false,true,false,false,false,false,false,true,true,false,true,false,true,true,false,true,true,false,false,false,false,false,false,false,true],
+    [false,false,true,false,false,true,false,false,false,false,true,true,false,false,false,true,true,false,false,false,false,true,false,true,true,false,true,true,true,true,true,false],
+    [false,true,false,true,false,true,false,true,false,false,false,false,true,true,false,false,false,true,true,true,true,true,false,true,true,true,false,false,false,false,true,true],
+    [false,true,true,true,false,false,true,false,true,false,true,true,true,true,true,false,false,true,false,true,true,true,false,true,false,true,true,true,false,true,false,false],
+    [true,false,false,false,false,false,false,false,true,true,false,true,true,true,true,false,true,false,true,true,false,false,false,true,true,true,true,true,true,true,true,false],
+    [true,false,false,true,true,false,true,true,true,true,false,true,true,true,false,false,false,false,false,false,false,true,true,false,true,false,true,false,false,true,true,true],
+    [true,true,false,false,false,false,false,true,true,false,false,true,true,false,true,true,true,true,true,true,false,false,false,true,false,true,true,true,false,true,false,false],
+    [true,true,true,false,false,true,false,false,true,false,false,true,true,false,true,true,false,true,true,false,true,false,false,true,true,true,false,false,false,false,false,true],
+    [true,true,true,false,true,true,true,true,true,false,true,true,true,true,true,false,false,true,false,false,false,true,true,true,true,false,false,false,false,true,true,false],
+    [false,false,false,false,true,true,true,true,true,true,false,false,false,false,false,true,true,false,false,true,true,true,false,true,true,true,false,false,false,true,true,false],
+    [false,false,true,false,false,true,false,false,false,false,false,false,true,true,false,false,true,false,true,false,false,false,false,true,true,true,false,false,true,true,false,false],
+    [false,false,true,false,true,true,false,true,true,true,true,false,true,false,false,true,false,false,true,false,true,true,false,false,false,true,true,false,true,true,true,true],
+    [false,true,false,false,true,false,true,false,false,true,true,true,false,true,false,false,true,false,false,false,false,true,false,false,true,false,true,false,true,false,true,false],
+    [false,true,false,true,true,true,false,false,true,false,true,true,false,false,false,false,true,false,true,false,true,false,false,true,true,true,false,true,true,true,false,false],
+    [false,true,true,true,false,true,true,false,true,true,true,true,true,false,false,true,true,false,false,false,true,false,false,false,true,true,false,true,true,false,true,false],
+    [true,false,false,true,true,false,false,false,false,false,true,true,true,true,true,false,false,true,false,true,false,false,false,true,false,true,false,true,false,false,true,false],
+    [true,false,true,false,true,false,false,false,false,false,true,true,false,false,false,true,true,true,false,false,false,true,true,false,false,true,true,false,true,true,false,true],
+    [true,false,true,true,false,false,false,false,false,false,false,false,false,false,true,true,false,false,true,false,false,true,true,true,true,true,false,false,true,false,false,false],
+    [true,false,true,true,true,true,true,true,false,true,false,true,true,false,false,true,false,true,true,true,true,true,true,true,true,true,false,false,false,true,true,true],
+    [true,true,false,false,false,true,true,false,true,true,true,false,false,false,false,false,false,false,false,false,true,false,true,true,true,true,true,true,false,false,true,true],
+    [true,true,false,true,false,true,false,true,true,false,true,false,false,true,true,true,true,false,false,true,false,false,false,true,false,true,false,false,false,true,true,true],
+    [false,false,false,false,false,true,true,false,true,true,false,false,true,false,true,false,false,true,true,false,false,false,true,true,false,true,false,true,false,false,false,true],
+    [false,false,false,true,false,true,false,false,false,false,true,false,true,false,false,true,false,false,true,false,true,false,false,true,false,true,true,false,false,true,true,true],
+    [false,false,true,false,false,true,true,true,true,false,true,true,false,true,true,true,false,false,false,false,true,false,true,false,true,false,false,false,false,true,false,true],
+    [false,false,true,false,true,true,true,false,false,false,false,true,true,false,true,true,false,false,true,false,false,false,false,true,false,false,true,true,true,false,false,false],
+    [false,true,false,false,true,true,false,true,false,false,true,false,true,true,false,false,false,true,true,false,true,true,false,true,true,true,true,true,true,true,false,false],
+    [false,true,false,true,false,false,true,true,false,false,true,true,true,false,false,false,false,false,false,false,true,true,false,true,false,false,false,true,false,false,true,true],
+    [false,true,true,false,false,true,false,true,false,false,false,false,true,false,true,false,false,true,true,true,false,false,true,true,false,true,false,true,false,true,false,false],
+    [false,true,true,true,false,true,true,false,false,true,true,false,true,false,true,false,false,false,false,false,true,false,true,false,true,false,true,true,true,false,true,true],
+    [true,false,false,false,false,false,false,true,true,true,false,false,false,false,true,false,true,true,false,false,true,false,false,true,false,false,true,false,true,true,true,false],
+    [true,false,false,true,false,false,true,false,false,true,true,true,false,false,true,false,false,false,true,false,true,true,false,false,true,false,false,false,false,true,false,true],
+    [true,false,true,false,false,false,true,false,true,false,true,true,true,true,true,true,true,true,true,false,true,false,false,false,true,false,true,false,false,false,false,true],
+    [true,false,true,false,true,false,false,false,false,false,false,true,true,false,true,false,false,true,true,false,false,true,true,false,false,true,false,false,true,false,true,true],
+    [true,true,false,false,false,false,true,false,false,true,false,false,true,false,true,true,true,false,false,false,true,false,true,true,false,true,true,true,false,false,false,false],
+    [true,true,false,false,false,true,true,true,false,true,true,false,true,true,false,false,false,true,false,true,false,false,false,true,true,false,true,false,false,false,true,true],
+    [true,true,false,true,false,false,false,true,true,false,false,true,false,false,true,false,true,true,true,false,true,false,false,false,false,false,false,true,true,false,false,true],
+    [true,true,false,true,false,true,true,false,true,false,false,true,true,false,false,true,false,false,false,false,false,true,true,false,false,false,true,false,false,true,false,false],
+    [true,true,true,true,false,true,false,false,false,false,false,false,true,true,true,false,false,false,true,true,false,true,false,true,true,false,false,false,false,true,false,true],
+    [false,false,false,true,false,false,false,false,false,true,true,false,true,false,true,false,true,false,true,false,false,false,false,false,false,true,true,true,false,false,false,false],
+    [false,false,false,true,true,false,false,true,true,false,true,false,false,true,false,false,true,true,false,false,false,false,false,true,false,false,false,true,false,true,true,false],
+    [false,false,false,true,true,true,true,false,false,false,true,true,false,true,true,true,false,true,true,false,true,true,false,false,false,false,false,false,true,false,false,false],
+    [false,false,true,false,false,true,true,true,false,true,false,false,true,false,false,false,false,true,true,true,false,true,true,true,false,true,false,false,true,true,false,false],
+    [false,false,true,true,false,true,false,false,true,false,true,true,false,false,false,false,true,false,true,true,true,true,false,false,true,false,true,true,false,true,false,true],
+    [false,false,true,true,true,false,false,true,false,false,false,true,true,true,false,false,false,false,false,false,true,true,false,false,true,false,true,true,false,false,true,true],
+    [false,true,false,false,true,true,true,false,true,true,false,true,true,false,false,false,true,false,true,false,true,false,true,false,false,true,false,false,true,false,true,false],
+    [false,true,false,true,true,false,true,true,true,false,false,true,true,true,false,false,true,true,false,false,true,false,true,false,false,true,false,false,true,true,true,true],
+    [false,true,true,false,true,false,false,false,false,false,true,false,true,true,true,false,false,true,true,false,true,true,true,true,true,true,true,true,false,false,true,true],
+    [false,true,true,true,false,true,false,false,true,false,false,false,true,true,true,true,true,false,false,false,false,false,true,false,true,true,true,false,true,true,true,false],
+    [false,true,true,true,true,false,false,false,true,false,true,false,false,true,false,true,false,true,true,false,false,false,true,true,false,true,true,false,true,true,true,true],
+    [true,false,false,false,false,true,false,false,true,true,false,false,true,false,false,false,false,true,true,true,true,false,false,false,false,false,false,true,false,true,false,false],
+    [true,false,false,false,true,true,false,false,true,true,false,false,false,true,true,true,false,false,false,false,false,false,true,false,false,false,false,false,true,false,false,false],
+    [true,false,false,true,false,false,false,false,true,false,true,true,true,true,true,false,true,true,true,true,true,true,true,true,true,true,true,true,true,false,true,false],
+    [true,false,true,false,false,true,false,false,false,true,false,true,false,false,false,false,false,true,true,false,true,true,false,false,true,true,true,false,true,false,true,true],
+    [true,false,true,true,true,true,true,false,true,true,true,true,true,false,false,true,true,false,true,false,false,false,true,true,true,true,true,true,false,true,true,true],
+    [true,true,false,false,false,true,true,false,false,true,true,true,false,false,false,true,false,true,true,true,true,false,false,false,true,true,true,true,false,false,true,false],
+  ];
+
   let values = inputString.split("").map(char => char.charCodeAt())
                                     .map(val => numToBitint(`${val}`, charSize))
                                     .reduce((acc, next) => acc.concat(next))
@@ -151,7 +254,9 @@ const sha256 = (inputString, charSize = 8) => {
       const s1 = xor(xor( rotr(workingArray[i-2], 17) , rotr(workingArray[i-2], 19)) , shiftr(workingArray[i-2], 10) );
       //console.log("s1 at cycle " + (i-15) + ": " + binaryArrayToString(s1));
 
-      workingArray[i] = moduloAdd(moduloAdd(moduloAdd(workingArray[i-16],s0, twoPower32), workingArray[i-7], twoPower32), s1, twoPower32).slice(32);
+      //workingArray[i] = moduloAdd(moduloAdd(moduloAdd(workingArray[i-16],s0, twoPower32), workingArray[i-7], twoPower32), s1, twoPower32).slice(32);
+
+      workingArray[i] = add(add(add(workingArray[i-16], s0), workingArray[i-7]), s1);
       //console.log("w["+i+"] at cycle " + (i-15) + ": " + binaryArrayToString(workingArray[i]));
     }
 
@@ -170,20 +275,20 @@ const sha256 = (inputString, charSize = 8) => {
     for (let i = 0; i < 64; i++) {
       const S1 = xor(xor(rotr(e,6), rotr(e, 11)), rotr(e, 23));
       const ch = xor(and(e, f), and(not(e), g));
-      const temp1 = moduloAdd(moduloAdd(moduloAdd(moduloAdd(h, S1, twoPower32), ch, twoPower32), roundConstants[i], twoPower32), workingArray[i], twoPower32).slice(32);
+      const temp1 = add(add(add(add(h, S1), ch), roundConstants[i]), workingArray[i]);
 
       const S0 = xor(xor(rotr(a, 2), rotr(a, 13)), rotr(a, 22));
       const maj = xor(xor(and(a, b), and(a, c)), and(b, c));
-      const temp2 = moduloAdd(S0, maj, twoPower32).slice(32);
+      const temp2 = add(S0, maj);
 
       h = g.slice();
       g = f.slice();
       f = e.slice();
-      e = moduloAdd(d, temp1, twoPower32).slice(32);
+      e = add(d, temp1);
       d = c.slice();
       c = b.slice();
       b = a.slice();
-      a = moduloAdd(temp1, temp2, twoPower32).slice(32);
+      a = add(temp1, temp2);
 
     }
 
@@ -196,6 +301,8 @@ const sha256 = (inputString, charSize = 8) => {
     hashVals[6] = add(hashVals[6], g);
     hashVals[7] = add(hashVals[7], h);
   }
+  const returnValue = binaryArrayToHexNum(hashVals.reduce((acc, next) => acc.concat(next)));
+  console.timeEnd();
   //console.log(hashVals.reduce((acc,next) => acc.concat(next)));
-  return binaryArrayToHexNum(hashVals.reduce((acc, next) => acc.concat(next)));
+  return returnValue;
 }
