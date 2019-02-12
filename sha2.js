@@ -1,5 +1,5 @@
 /* SHA-2 */
-
+/*
 const hashVals = [
   [false, true, true, false, true, false, true, false,
     false, false, false, false, true, false, false, true,
@@ -306,3 +306,4 @@ const sha256 = (inputString, charSize = 8) => {
   //console.log(hashVals.reduce((acc,next) => acc.concat(next)));
   return returnValue;
 }
+*/
