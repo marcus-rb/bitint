@@ -78,8 +78,8 @@ const rotl_ip = (num, amount) => {
 }
 
 // vv .... 64-bit number processing .... vv
-// Assumes 64-bit numbers are stored as an
-// ArrayBuffer containing two [U]Int32Arrays, each containing a value
+// Assumes 64-bit numbers are stored as a Uint32Array of length 2,
+// where each slot is a part of the number
 
 // < Working methods >
 const get64 = (int32_1, int32_2) => {
@@ -261,7 +261,44 @@ const rotl64_ip = (num, amount) => {
   num[0] |= rotOut2 >>> (32-amount);
   num[1] |= rotOut2 >>> (32-amount);
 }
+
 // < Arithmetic >
+
+const add64_2 = (num1, num2) => {
+  //console.time("Add 1:");
+  let results = new Uint32Array(2);
+  let workingVariables = new Uint32Array(4);
+      workingVariables[0] = num1[1]; //First number rear bits
+      workingVariables[1] = num2[1]; //Second number rear bits
+      workingVariables[2] = num1[0]; //First number forward bits
+      workingVariables[3] = num2[0]; //Second number forward bits;
+
+  results[1] = workingVariables[0] + workingVariables[1];
+  results[0] = results[1] < workingVariables[0] || results[1] < workingVariables[1] ?
+                workingVariables[2] + 1 + workingVariables[3] :
+                workingVariables[2] + workingVariables[3];
+  //console.timeEnd("Add 1:");
+  return results;
+}
+//Not sure which one of these is faster yet
+const add64 = (num1, num2) => {
+  //console.time("Add 2:");
+  const processNums = new Uint32Array(5);
+        processNums[0] = num1[1]; //First number rear bits
+        processNums[1] = num2[1]; //Last number rear bits
+        processNums[2] = num1[0]; //First number front bits
+        processNums[3] = num2[0]; //Last number front bits
+        processNums[4] = 1;
+
+  const results = new Uint32Array(2);
+        results[1] = processNums[0] + processNums[1];
+        results[0] = results[1] < processNums[0] || results[1] < processNums[1] ?
+                      processNums[4] + processNums[2] + processNums[3] :
+                      processNums[2] + processNums[3] ;
+
+  //console.timeEnd("Add 2:")
+  return results;
+}
 
 // < Conversion >
 
@@ -319,3 +356,15 @@ const plus255 = u_byte(255);
 const p64bitnum = new Uint32Array(2);
       p64bitnum[0] = 0b11110101111101111111010111110111;
       p64bitnum[1] = 0b11111111111101010000000011111000;
+
+const p64bitnum2 = new Uint32Array(2);
+      p64bitnum2[0] = 0b00000000000000000000000101011111;
+      p64bitnum2[1] = 0b11110000000001001011111111111111;
+
+const p64_1 = new Uint32Array(2);
+      p64_1[0] = 0b00000000000000000000000000000000;
+      p64_1[1] = 0b00000000000000000000000000000001;
+
+const p64_max = new Uint32Array(2);
+      p64_max[0] = 0b11111111111111111111111111111111;
+      p64_max[1] = 0b11111111111111111111111111111111;
