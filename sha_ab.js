@@ -77,8 +77,7 @@ const roundConstants = {
 })();
 
 // < SHA-2 w/ 64-bit words >
-roundConstants.sha64[0] = new Uint32Array(80);
-roundConstants.sha64[1] = new Uint32Array(80);
+roundConstants.sha64 = new ArrayBuffer(80);
 
 (function(){
   //Each 64-bit constant is two and two 32 bit integers appended
@@ -102,8 +101,9 @@ roundConstants.sha64[1] = new Uint32Array(80);
 //(----------------------),(---------------------),(---------------------),(---------------------),(----------------------)
   ];
   for (let i = 0; i < 80; i++) {
-    roundConstants.sha64[0][i] = roundConstantsTemp[2*i];
-    roundConstants.sha64[1][i] = roundConstantsTemp[2*(i+1)];
+    roundConstants.sha64[i] = new Uint32Array(2);
+    roundConstants.sha64[i][0] = roundConstantsTemp[2*i];
+    roundConstants.sha64[i][1] = roundConstantsTemp[2*i+1];
   }
 })();
 console.log(roundConstants)
@@ -146,7 +146,7 @@ const SHA_2 = (message, digestSize, charsetSize = 8) => {
 
   const preProcessedMessageTargetLength = charsetSize * message.length;
   const postProcessedMessageTargetLength =
-    (Math.floor(preProcessedMessageTargetLength / 512) + 1) * 512 ;
+    (Math.floor(preProcessedMessageTargetLength / chunkSize) + 1) * chunkSize ;
 
   let bitsToAdd = postProcessedMessageTargetLength - 65 - preProcessedMessageTargetLength;
 
