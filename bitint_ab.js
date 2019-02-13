@@ -122,12 +122,16 @@ const SHA_2 = (message, digestSize, charsetSize = 8) => {
   const roundConstantsLocal = roundConstants[`sha${wordSize}`];
   //---
   // Determine calculation parameters
-  const chunkSize = wordSize === 32 ? 512 : 1024 ;
-  const cycles = wordSize === 32 ? 64 : 80 ;
-  const messageLengthSuffixSize = wordSize === 32 ? 64 : 128 ;
-  const rotationAndShiftAmounts = wordSize === 32 ?
-    [7, 18, 3, 17, 19, 10, 6, 11, 25, 2, 13, 22] :
-    [1, 8, 7, 19, 61, 6, 14, 18, 41, 28, 34, 39] ;
+  const calculationParamaters = wordSize === 32 ?
+        [512, 64, 64, [7, 18, 3, 17, 19, 10, 6, 11, 25, 2, 13, 22]] :
+        [1024, 80, 128, [1, 8, 7, 19, 61, 6, 14, 18, 41, 28, 32, 39]] ;
+
+  const calcParam = calculationParamaters; //Shorthand reference;
+  const chunkSize = calcParam[0];
+  const cycles = calcParam[1];
+  const messageLengthSuffixSize = calcParam[2];
+  const rotationAndShiftAmounts = calcParam[3];
+
   //---
   //Convert input to to array of chars
   message = message.split("")
