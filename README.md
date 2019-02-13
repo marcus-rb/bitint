@@ -16,9 +16,9 @@ Use this list to follow the development progress
   - [x] Addition
   - [x] Multiplication
   - [x] Subtraction
-  - [ ] Division (unstable)
-  - [ ] Modulus (unstable)
-  - [ ] Modulo addition
+  - [x] Division
+  - [x] Modulus
+  - [x] Modulo addition
   - [ ] Incrementation
   - [ ] Decrementation
 - [x] Number to bitint conversion
