@@ -311,6 +311,28 @@ const add64_ip = (num1, num2) => {
 }
 
 // < Conversion >
+const multiplyBy10 = (num) => {
+  //const returnVal = new Uint32Array(2);
+  const temp1 = shiftl64(num, 1);
+  const temp2 = shiftl64(num, 3);
+  return add64(temp1, temp2);
+}
+
+const tenToNto64 = (n) => {
+  // Returns 10 ^ n in binary;
+  let base = new Uint32Array(2);
+        base[0] = 0;
+        base[1] = 1;
+
+  let temp1, temp, tempsum;
+  for (let i = 0; i < n; i++) {
+    temp1 = shiftl64(base, 1);
+    temp2 = shiftl64(base, 3);
+    base = add64(temp1, temp2);
+  }
+  return base;
+}
+
 
 // .... 64-bit number processig complete
 
