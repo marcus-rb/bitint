@@ -280,6 +280,7 @@ const add64_2 = (num1, num2) => {
   //console.timeEnd("Add 1:");
   return results;
 }
+
 //Not sure which one of these is faster yet
 const add64 = (num1, num2) => {
   //console.time("Add 2:");
@@ -308,6 +309,20 @@ const add64_ip = (num1, num2) => {
   num1[0] += num1[1] < copy1 || num1[0] < copy2 ? 1 + num2[0] : num2[0] ;
 }
 // < Conversion >
+const tenToNto64 = (n) => {
+  // Returns 10 ^ n in binary;
+  const base = new Uint32Array(2);
+        base[0] = 0;
+        base[1] = 1;
+
+  while( n > 0 ) {
+    let temp1 = shiftl64_ip(base, 3);
+    let temp2 = shiftr64_ip(base, 1);
+    base = add64(temp1, temp2);
+    n--
+  }
+  return base;
+}
 
 // .... 64-bit number processig complete
 
