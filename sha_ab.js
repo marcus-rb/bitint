@@ -28,38 +28,41 @@ hashConstants.sha224[7] = 0xbefa4fa4;
 
 // < SHA-512 >
 // .. Splits constants into two 32-bit numbers.
-hashConstants.sha512[0] = new Uint32Array(8);
-hashConstants.sha512[1] = new Uint32Array(8);
+hashConstants.sha512 = new ArrayBuffer(8);
 
-hashConstants.sha512[0][0] = 0x6a09e667; hashConstants.sha512[1][0] = 0xf3bcc908;
-hashConstants.sha512[0][1] = 0xbb67ae85; hashConstants.sha512[1][1] = 0x84caa73b;
-hashConstants.sha512[0][2] = 0x3c6ef372; hashConstants.sha512[1][2] = 0xfe94f82b;
-hashConstants.sha512[0][3] = 0xa54ff53a; hashConstants.sha512[1][3] = 0x5f1d36f1;
-hashConstants.sha512[0][4] = 0x510e527f; hashConstants.sha512[1][4] = 0xade682d1;
-hashConstants.sha512[0][5] = 0x9b05688c; hashConstants.sha512[1][5] = 0x2b3e6c1f;
-hashConstants.sha512[0][6] = 0x1f83d9ab; hashConstants.sha512[1][6] = 0xfb41bd6b;
-hashConstants.sha512[0][7] = 0x5be0cd19; hashConstants.sha512[1][7] = 0x137e2179;
+for (let i = 0; i < 8; i++) hashConstants.sha512[i] = new Uint32Array(2);
+
+hashConstants.sha512[0][0] = 0x6a09e667; hashConstants.sha512[0][1] = 0xf3bcc908;
+hashConstants.sha512[1][0] = 0xbb67ae85; hashConstants.sha512[1][1] = 0x84caa73b;
+hashConstants.sha512[2][0] = 0x3c6ef372; hashConstants.sha512[2][1] = 0xfe94f82b;
+hashConstants.sha512[3][0] = 0xa54ff53a; hashConstants.sha512[3][1] = 0x5f1d36f1;
+hashConstants.sha512[4][0] = 0x510e527f; hashConstants.sha512[4][1] = 0xade682d1;
+hashConstants.sha512[5][0] = 0x9b05688c; hashConstants.sha512[5][1] = 0x2b3e6c1f;
+hashConstants.sha512[6][0] = 0x1f83d9ab; hashConstants.sha512[6][1] = 0xfb41bd6b;
+hashConstants.sha512[7][0] = 0x5be0cd19; hashConstants.sha512[7][1] = 0x137e2179;
+
 
 // < SHA-384 >
 // .. Splits constants into two 32-bit numbers.
-hashConstants.sha384[0] = new Uint32Array(8);
-hashConstants.sha384[1] = new Uint32Array(8);
+hashConstants.sha384 = new ArrayBuffer(8);
 
-hashConstants.sha384[0][0] = 0xcbbb9d5d; hashConstants.sha384[1][0] = 0xc1059ed8;
-hashConstants.sha384[0][1] = 0x629a292a; hashConstants.sha384[1][1] = 0x367cd507;
-hashConstants.sha384[0][2] = 0x9159015a; hashConstants.sha384[1][2] = 0x3070dd17;
-hashConstants.sha384[0][3] = 0x152fecd8; hashConstants.sha384[1][3] = 0xf70e5939;
-hashConstants.sha384[0][4] = 0x67332667; hashConstants.sha384[1][4] = 0xffc00b31;
-hashConstants.sha384[0][5] = 0x8eb44a87; hashConstants.sha384[1][5] = 0x68581511;
-hashConstants.sha384[0][6] = 0xdb0c2e0d; hashConstants.sha384[1][6] = 0x64f98fa7;
-hashConstants.sha384[0][7] = 0x47b5481d; hashConstants.sha384[1][7] = 0xbefa4fa4;
+for (let i = 0; i < 8; i++) hashConstants.sha384[i] = new Uint32Array(2);
+
+hashConstants.sha384[0][0] = 0xcbbb9d5d; hashConstants.sha384[0][1] = 0xc1059ed8;
+hashConstants.sha384[1][0] = 0x629a292a; hashConstants.sha384[1][1] = 0x367cd507;
+hashConstants.sha384[2][0] = 0x9159015a; hashConstants.sha384[2][1] = 0x3070dd17;
+hashConstants.sha384[3][0] = 0x152fecd8; hashConstants.sha384[3][1] = 0xf70e5939;
+hashConstants.sha384[4][0] = 0x67332667; hashConstants.sha384[4][1] = 0xffc00b31;
+hashConstants.sha384[5][0] = 0x8eb44a87; hashConstants.sha384[5][1] = 0x68581511;
+hashConstants.sha384[6][0] = 0xdb0c2e0d; hashConstants.sha384[6][1] = 0x64f98fa7;
+hashConstants.sha384[7][0] = 0x47b5481d; hashConstants.sha384[7][1] = 0xbefa4fa4;
 
 // ... HASH CONSTANTS COMPLETE ...
 
 // vv .... ROUND CONSTANTS SETUP .... vv
 const roundConstants = {
   sha32: new Uint32Array(64),
-  sha64: new ArrayBuffer(2),
+  sha64: new ArrayBuffer(80),
 };
 // < SHA-2 w/ 32-bit words >
 (function(){
@@ -77,7 +80,7 @@ const roundConstants = {
 })();
 
 // < SHA-2 w/ 64-bit words >
-roundConstants.sha64 = new ArrayBuffer(80);
+//roundConstants.sha64 = new ArrayBuffer(80);
 
 (function(){
   //Each 64-bit constant is two and two 32 bit integers appended
@@ -130,9 +133,21 @@ const SHA_2 = (message, digestSize, charsetSize = 8) => {
   const rotationAndShiftAmounts = calculationParameters[3];
 
   //---
+  // Initialize integer of size MessageLengthSuffixSize
+  const messageLengthInt = messageLengthSuffixSize === 64 ? get64(0, 0) :
+                                                            get128(0, 0, 0, 0);
+  const incrementMessageLength = () => messageLengthSuffixSize === 64 ?
+                                   add64_ip(messageLengthInt, 1) :
+                                   add128_ip(messageLengthInt, 1);
+
+
   //Convert input to to array of chars
+
   message = message.split("")
-                   .map(char => char.charCodeAt());
+                   .map(char => {
+                     incrementMessageLength();
+                     return char.charCodeAt();
+                   });
 
   const initialMessageLength = message.length;
   let preProcessedMessage = charsetSize === 8 ?
@@ -148,17 +163,31 @@ const SHA_2 = (message, digestSize, charsetSize = 8) => {
   const postProcessedMessageTargetLength =
     (Math.floor(preProcessedMessageTargetLength / chunkSize) + 1) * chunkSize ;
 
-  let bitsToAdd = postProcessedMessageTargetLength - 65 - preProcessedMessageTargetLength;
+  let bitsToAdd =
+    postProcessedMessageTargetLength - 1
+     - messageLengthSuffixSize - preProcessedMessageTargetLength;
 
   const onBitToAppend = charsetSize === 8 ? new Uint8Array(1) :
                           charsetSize === 16 ? new Uint16Array(1) :
                                                new Uint32Array(1) ;
       onBitToAppend[0] = 1 << ((onBitToAppend.BYTES_PER_ELEMENT * 8)-1);
 
-  console.log(onBitToAppend);
-
   bitsToAdd -= onBitToAppend.BYTES_PER_ELEMENT * 8 - 1;
-  console.log(bitsToAdd);
+
+  const messagePostPadding = new Uint32Array(postProcessedMessageTargetLength / charsetSize);
+
+  for (let i = 0; i < initialMessageLength; i++)
+    messagePostPadding[i] = preProcessedMessage[i];
+
+  messagePostPadding[initialMessageLength] = onBitToAppend;
+  messagePostPadding[messagePostPadding.length-1] = initialMessageLength * charsetSize;
+
+  console.log(messagePostPadding);
+
+  //console.log(onBitToAppend);
+
+
+  //console.log(bitsToAdd);
   console.timeEnd("Hash completed in");
   //console.log(preProcessedMessageTargetLength);
   //console.log(hashConstantsLocal);
