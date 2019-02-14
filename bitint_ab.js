@@ -7,7 +7,7 @@
 // ALL NUMBERS ARE ASSUMED TO BE OF TYPE {U}Int{num}Array(1)
 
 const rotr = (num, amount) => {
-
+  console.time();
   let processNum = num.slice()[0];
   let amountInitial = parseInt(`${amount}`);
   let temp = 0;
@@ -27,7 +27,7 @@ const rotr = (num, amount) => {
                       num.constructor === Int32Array ? new Int32Array(1) : null;
 
   returnValue[0] = rotatedOut | processNum ;
-
+  console.timeEnd();
   return returnValue;
 }
 const rotr_ip = (num, amount) => {
@@ -300,11 +300,31 @@ const add64 = (num1, num2) => {
   return results;
 }
 
+const add64_ip = (num1, num2) => {
+  const copy1 = num1.slice()[1];
+  const copy2 = num2.slice()[1];
+
+  num1[1] += num2[1];
+  num1[0] += num1[1] < copy1 || num1[0] < copy2 ? 1 + num2[0] : num2[0] ;
+}
 // < Conversion >
 
 // .... 64-bit number processig complete
 
+// vv ... 128-bit number processing ... vv
+// < General >
+const get128 = (int32_1, int32_2, int32_3, int32_4) => {
+  const returnValue = new Uint32Array(4);
+        returnValue[0] = int32_1;
+        returnValue[1] = int32_2;
+        returnValue[2] = int32_3;
+        returnvalue[3] = int32_4;
+
+  return returnValue;
+}
+
 // vv .... Integer classes .... vv
+/*
 const byte = (num) => {
   const temp = new Int8Array(1);
   temp[0] = num;
@@ -352,6 +372,12 @@ const long = (num) => {
 const plus56 = u_byte(56);
 
 const plus255 = u_byte(255);
+*/
+const p128bitnum = new Uint32Array(4);
+      p128bitnum[0] = 0b00000000000000000000000000000000;
+      p128bitnum[1] = 0b00000000000000000000000000000000;
+      p128bitnum[2] = 0b00000000000000000000000000000000;
+      p128bitnum[3] = 0b00000000000000000000000000000000;
 
 const p64bitnum = new Uint32Array(2);
       p64bitnum[0] = 0b11110101111101111111010111110111;
